@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import {ActivityIndicator, Button, TouchableRipple} from 'react-native-paper'
 // import {getAuth} from "firebase/auth";
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+// import * as firestore from 'firebase/firebase-auth';
 import {AppContext} from '../Context'
 import * as CONFIG from '../CONFIG'
 
@@ -11,9 +11,9 @@ import * as CONFIG from '../CONFIG'
 export default function Index() {
     const [signinmode, setsigninmode] = useState(true)
     const context = useContext(AppContext);
-    const firebase = context[1];
+    const firebase = context[0].firebase;
 
-    console.log(getFirestore(firebase))
+    console.log(firebase.auth())
 
     
   return (

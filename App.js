@@ -5,6 +5,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import {getStatusBarHeight} from 'react-native-status-bar-height'
 import Index from './src/Index'
 import firebase_app from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDacV6FQwLxve7HThVYbUcIWkK4EAbZH_g",
@@ -16,7 +18,10 @@ const firebaseConfig = {
   appId: "1:421002849732:web:56219ed5b2b606b4838891",
   measurementId: "G-BR4DMDJ1RB"
 };
-firebase_app.initializeApp(firebaseConfig);
+
+if(firebase_app.apps.length === 0){
+  firebase_app.initializeApp(firebaseConfig);
+}
 
 export default function App() {
   return (
