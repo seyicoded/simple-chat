@@ -1,6 +1,8 @@
-import React, {useState, useEffect, useContext} from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
-import {ActivityIndicator, Button, TouchableRipple} from 'react-native-paper'
+import React, {useState, useEffect, useContext, useRef} from 'react';
+import { View, StyleSheet, ImageBackground, Alert } from 'react-native';
+import {ActivityIndicator, Button, TouchableRipple, TextInput, Text,} from 'react-native-paper'
+import RBSheet from 'react-native-raw-bottom-sheet';
+import Spinner from 'react-native-loading-spinner-overlay';
 // import {getAuth} from "firebase/auth";
 // import * as firestore from 'firebase/firebase-auth';
 import {AppContext} from '../Context'
@@ -13,7 +15,8 @@ export default function Index() {
     const context = useContext(AppContext);
     const firebase = context[0].firebase;
 
-    console.log(firebase.auth())
+    const googleProvider = new firebase.auth.GoogleAuthProvider()
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
 
     
   return (
@@ -21,7 +24,7 @@ export default function Index() {
           <View style={styles.container}>
             <Text style={styles.title}>SEYI INSTANT CHAT</Text>
             {
-                signinmode ? <Sign_in /> : <Sign_up/>
+                signinmode ? <Sign_in firebase={firebase} googleProvider={googleProvider} /> : <Sign_up firebase={firebase}/>
             }
 
             <TouchableRipple onPress={()=> setsigninmode( (signinmode ? false:true) )}>
@@ -32,11 +35,85 @@ export default function Index() {
   );
 }
 
-function Sign_in(){
+function BottomSheet({modalRef, type, firebase}){
+    const [email, setemail] = useState('')
+    const [password, setpassword] = useState('')
+    const [spinner, setspinner] = useState(false)
+
+    const process_auth = async()=> {
+        try{
+            if(type == 'sign-in'){
+                // sign in logic
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+            }else{
+                // sign up logic
+                await firebase.auth().createUserWithEmailAndPassword(email, password);
+    
+            }      
+            
+        }catch(err){
+          console.error('err ', err);
+          setTimeout(() => {
+            Alert.alert('Oops!', err.message);
+          }, 100);
+        }
+
+        setspinner(false);
+
+    }
+
+    return (
+        <RBSheet
+                ref={ref => {
+                    modalRef.current = ref;
+                }}
+                height={300}
+                closeOnDragDown={true}
+                closeOnPressBack={true}
+                openDuration={250}
+                customStyles={{
+                    wrapper: {
+                      backgroundColor: "transparent",
+                    },
+                    container: {
+                        backgroundColor: "rgba(255,255,255,0.7)",
+                        borderTopLeftRadius: 16,
+                        borderTopRightRadius: 16,
+                        shadowColor: 'rgba(0,0,0,0.5)',
+                        shadowOpacity: 1,
+                        shadowRadius: 4,
+                        shadowOffset: {width: 1, height: 1}
+                    },
+                    draggableIcon: {
+                      backgroundColor: "#000"
+                    }
+                }}
+                >
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <Spinner textContent="Loading" visible={spinner} textStyle={{color: 'white'}} />
+                    <View style={{width: '94%'}}>
+                        <Text style={{fontSize: 24, fontWeight: '600', color: 'rgba(0,0,0,0.65)', marginBottom: 9}}>{(type == 'sign-in') ? 'SIGN IN':'SIGN UP'}</Text>
+                        <TextInput autoCompleteType="email" value={email} onChangeText={t => setemail(t)} keyboardType="email-address" textContentType="emailAddress" label="Email" placeholder="Enter Email" />
+                        <Text />
+                        <TextInput autoCompleteType="password" value={password} onChangeText={t => setpassword(t)} textContentType="password" secureTextEntry={true} label="Password" placeholder="Enter Password" />
+                        <Text />
+                        <Button onPress={()=> process_auth()} mode="contained" color="blue" style={{paddingVertical: 6}}>CONTINUE</Button>
+                    </View>
+                    
+                </View>
+            </RBSheet>
+    )
+}
+
+function Sign_in({firebase, googleProvider}){
+    const modalRef = useRef(null)
     return (
         <View style={styles.sub_container}>
+            <BottomSheet modalRef={modalRef} type="sign-in" firebase={firebase}/>
+
+            <Button onPress={()=>modalRef.current.open()} mode="contained" icon="email" color="black" style={styles.btn}>Email SIGN IN</Button>
             <Button onPress={()=>{
-                
+                firebase.auth().signInWithPopup(googleProvider)
             }} mode="contained" icon="google" color="red" style={styles.btn}>GOOGLE SIGN IN</Button>
             <Button mode="contained" icon="apple" color="black" style={styles.btn}>APPLE SIGN IN</Button>
             <Button mode="contained" icon="facebook" color="blue" style={styles.btn}>FACBK SIGN IN</Button>
@@ -46,8 +123,12 @@ function Sign_in(){
 }
 
 function Sign_up(){
+    const modalRef = useRef(null)
     return (
         <View style={styles.sub_container}>
+            <BottomSheet modalRef={modalRef} type="sign-up" firebase={firebase}/>
+
+            <Button onPress={()=>modalRef.current.open()} mode="contained" icon="email" color="black" style={styles.btn}>Email SIGN UP</Button>
             <Button mode="contained" icon="google" color="red" style={styles.btn}>GOOGLE SIGN UP</Button>
             <Button mode="contained" icon="apple" color="black" style={styles.btn}>APPLE SIGN UP</Button>
             <Button mode="contained" icon="facebook" color="blue" style={styles.btn}>FACBK SIGN UP</Button>
@@ -69,7 +150,8 @@ const styles = StyleSheet.create({
     title: {
         color: CONFIG.Primary_Color,
         fontSize: 21.92,
-        fontWeight: '800'
+        fontWeight: '800',
+        marginBottom: 7
     },
     btn: {
         marginVertical: 14,
