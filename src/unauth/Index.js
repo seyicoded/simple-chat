@@ -18,6 +18,22 @@ export default function Index() {
     const googleProvider = new firebase.auth.GoogleAuthProvider()
     googleProvider.setCustomParameters({ prompt: 'select_account' });
 
+    useEffect(() => {
+        // onAuthStateChanged returns an unsubscriber
+        const unsubscribeAuth = firebase.auth().onAuthStateChanged(async authenticatedUser => {
+          try {
+            // await (authenticatedUser ? setUser(authenticatedUser) : setUser(null));
+            console.log(authenticatedUser)
+            // setIsLoading(false);
+          } catch (error) {
+            console.log(error);
+          }
+        });
+    
+        // unsubscribe auth listener on unmount
+        return unsubscribeAuth;
+    }, []);
+
     
   return (
       <ImageBackground style={{flex: 1}} source={require('../../assets/res/bg/b2.jpg')}>
@@ -41,6 +57,7 @@ function BottomSheet({modalRef, type, firebase}){
     const [spinner, setspinner] = useState(false)
 
     const process_auth = async()=> {
+        setspinner(true)
         try{
             if(type == 'sign-in'){
                 // sign in logic
@@ -122,7 +139,7 @@ function Sign_in({firebase, googleProvider}){
     )
 }
 
-function Sign_up(){
+function Sign_up({firebase, googleProvider}){
     const modalRef = useRef(null)
     return (
         <View style={styles.sub_container}>
