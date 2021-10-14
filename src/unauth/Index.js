@@ -3,6 +3,7 @@ import { View, StyleSheet, ImageBackground, Alert } from 'react-native';
 import {ActivityIndicator, Button, TouchableRipple, TextInput, Text,} from 'react-native-paper'
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Spinner from 'react-native-loading-spinner-overlay';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 // import {getAuth} from "firebase/auth";
 // import * as firestore from 'firebase/firebase-auth';
 import {AppContext} from '../Context'
@@ -23,7 +24,18 @@ export default function Index() {
         const unsubscribeAuth = firebase.auth().onAuthStateChanged(async authenticatedUser => {
           try {
             // await (authenticatedUser ? setUser(authenticatedUser) : setUser(null));
-            console.log(authenticatedUser)
+            // console.log(authenticatedUser)
+            // connect to firestore and store user
+            const user_col = await firebase.firestore().collection('Users').doc(authenticatedUser.uid).set({
+                email: authenticatedUser.email,
+                photoURL: authenticatedUser.photoURL,
+                displayName: authenticatedUser.displayName,
+            })
+            // update async store and context 
+            await AsyncStorage.setItem('user_id', authenticatedUser.uid)
+            context[1].setuid(authenticatedUser.uid)
+            
+
             // setIsLoading(false);
           } catch (error) {
             console.log(error);
@@ -114,7 +126,7 @@ function BottomSheet({modalRef, type, firebase}){
                         <Text />
                         <TextInput autoCompleteType="password" value={password} onChangeText={t => setpassword(t)} textContentType="password" secureTextEntry={true} label="Password" placeholder="Enter Password" />
                         <Text />
-                        <Button onPress={()=> process_auth()} mode="contained" color="blue" style={{paddingVertical: 6}}>CONTINUE</Button>
+                        <Button disabled={ (email == '' || password.length <= 4) ? true:false } onPress={()=> process_auth()} mode="contained" color="blue" style={{paddingVertical: 6}}>CONTINUE</Button>
                     </View>
                     
                 </View>
@@ -131,10 +143,10 @@ function Sign_in({firebase, googleProvider}){
             <Button onPress={()=>modalRef.current.open()} mode="contained" icon="email" color="black" style={styles.btn}>Email SIGN IN</Button>
             <Button onPress={()=>{
                 firebase.auth().signInWithPopup(googleProvider)
-            }} mode="contained" icon="google" color="red" style={styles.btn}>GOOGLE SIGN IN</Button>
-            <Button mode="contained" icon="apple" color="black" style={styles.btn}>APPLE SIGN IN</Button>
-            <Button mode="contained" icon="facebook" color="blue" style={styles.btn}>FACBK SIGN IN</Button>
-            <Button mode="contained" icon="twitter" color="lightgray" style={styles.btn}>TWIT SIGN IN</Button>
+            }} mode="contained" disabled={true} icon="google" color="red" style={styles.btn}>GOOGLE SIGN IN</Button>
+            <Button mode="contained" disabled={true} icon="apple" color="black" style={styles.btn}>APPLE SIGN IN</Button>
+            <Button mode="contained" disabled={true} icon="facebook" color="blue" style={styles.btn}>FACBK SIGN IN</Button>
+            <Button mode="contained" disabled={true} icon="twitter" color="lightgray" style={styles.btn}>TWIT SIGN IN</Button>
         </View>
     )
 }
@@ -146,10 +158,10 @@ function Sign_up({firebase, googleProvider}){
             <BottomSheet modalRef={modalRef} type="sign-up" firebase={firebase}/>
 
             <Button onPress={()=>modalRef.current.open()} mode="contained" icon="email" color="black" style={styles.btn}>Email SIGN UP</Button>
-            <Button mode="contained" icon="google" color="red" style={styles.btn}>GOOGLE SIGN UP</Button>
-            <Button mode="contained" icon="apple" color="black" style={styles.btn}>APPLE SIGN UP</Button>
-            <Button mode="contained" icon="facebook" color="blue" style={styles.btn}>FACBK SIGN UP</Button>
-            <Button mode="contained" icon="twitter" color="lightgray" style={styles.btn}>TWIT SIGN UP</Button>
+            <Button disabled={true} mode="contained" icon="google" color="red" style={styles.btn}>GOOGLE SIGN UP</Button>
+            <Button disabled={true} mode="contained" icon="apple" color="black" style={styles.btn}>APPLE SIGN UP</Button>
+            <Button disabled={true} mode="contained" icon="facebook" color="blue" style={styles.btn}>FACBK SIGN UP</Button>
+            <Button disabled={true} mode="contained" icon="twitter" color="lightgray" style={styles.btn}>TWIT SIGN UP</Button>
         </View>
     )
 }

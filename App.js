@@ -22,7 +22,7 @@ const firebaseConfig = {
 if(firebase_app.apps.length === 0){
   firebase_app.initializeApp(firebaseConfig);
 }
-// firebase_app.auth.is
+// firebase_app.firestore().collection().doc().set
 
 export default function App() {
   return (

@@ -8,14 +8,18 @@ import {createStackNavigator} from '@react-navigation/stack'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Guest_Home from './unauth/Index'
 import User_Home from './auth/Index'
+import Edit from './auth/Edit'
 
 export default function Index({firebase}) {
+    // AsyncStorage.clear()
     const StackNav = createStackNavigator()
     const [isStartFetching, setisStartFetching] = useState(true);
     const [isSignedIn, setisSignedIn] = useState('false');
+    const [isViewEdit, setisViewEdit] = useState('true');
+    const [uid, setuid] = useState('');
     const [context, setContext] = useState([
-        {isSignedIn,firebase},
-        {setisSignedIn,firebase}
+        {isSignedIn,firebase, uid, isViewEdit},
+        {setisSignedIn,firebase, setuid, setisViewEdit}
     ]);
 
     useEffect(() => {
@@ -23,6 +27,15 @@ export default function Index({firebase}) {
         const fetchdata = async ()=>{
             const ASS_user_id = await AsyncStorage.getItem('user_id')
             setisSignedIn( (ASS_user_id != null) ? 'true': 'false')
+            setuid( (ASS_user_id != null) ? ASS_user_id: '')
+
+            const ASS_view_edit = await AsyncStorage.getItem('view_edit')
+            setisViewEdit( (ASS_view_edit != null) ? 'false': 'true')
+
+            setContext([
+                {isSignedIn,firebase, uid, isViewEdit},
+                {setisSignedIn,firebase, setuid, setisViewEdit}
+            ])
 
             setisStartFetching(false)
         }
@@ -32,7 +45,7 @@ export default function Index({firebase}) {
       return () => {
         
       };
-    }, [])
+    }, [uid, isViewEdit])
 
   return (
     <AppContext.Provider value={context}>
@@ -51,7 +64,16 @@ export default function Index({firebase}) {
                         </>
                         :
                         <>
-                            <StackNav.Screen name="User_Home" component={User_Home} />
+                            {
+                                (isViewEdit == 'true') ? 
+                                    <StackNav.Screen name="User_Edit" component={Edit} />
+                                :
+                                <>
+                                    <StackNav.Screen name="User_Home" component={User_Home} />
+                                </>
+                                
+                            }
+                            
                         </>
                     }
                 </StackNav.Navigator>
