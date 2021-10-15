@@ -105,7 +105,7 @@ function BottomSheet({modalRef, type, firebase}){
                       backgroundColor: "transparent",
                     },
                     container: {
-                        backgroundColor: "rgba(255,255,255,0.7)",
+                        backgroundColor: "rgba(255,255,255,0.9)",
                         borderTopLeftRadius: 16,
                         borderTopRightRadius: 16,
                         shadowColor: 'rgba(0,0,0,0.5)',

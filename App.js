@@ -22,7 +22,7 @@ const firebaseConfig = {
 if(firebase_app.apps.length === 0){
   firebase_app.initializeApp(firebaseConfig);
 }
-// firebase_app.firestore().collection().doc().set
+// firebase_app.auth().signOut
 
 export default function App() {
   return (
@@ -36,7 +36,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: getStatusBarHeight(true)
+    // paddingTop: getStatusBarHeight(true)
   },
 });

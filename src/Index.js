@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import Guest_Home from './unauth/Index'
 import User_Home from './auth/Index'
 import Edit from './auth/Edit'
+import Chat from './auth/Chat'
 
 export default function Index({firebase}) {
     // AsyncStorage.clear()
@@ -70,6 +71,8 @@ export default function Index({firebase}) {
                                 :
                                 <>
                                     <StackNav.Screen name="User_Home" component={User_Home} />
+                                    <StackNav.Screen name="User_Edit" component={Edit} />
+                                    <StackNav.Screen name="User_Chat" component={Chat} />
                                 </>
                                 
                             }

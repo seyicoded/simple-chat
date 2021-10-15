@@ -29,18 +29,20 @@ export default function Edit() {
             }} onSubmit={(txt)=>{
                 console.log(txt);
                 // return false;
-                setshowDisplayName(false)
-                setshowLoading(true)
+                setshowDisplayName(false);
+                setshowLoading(true);
                 // update firebase
                 firebase.firestore().collection('Users').doc(context[0].uid).update({displayName: txt}).then(()=>{
-                    (async()=>{
+                    
+                    (async ()=>{
                         await AsyncStorage.setItem('view_edit', 'false')
                         context[1].setisViewEdit('false')
                     })();
+
                 }).error(()=>{
                     setshowDisplayName(true)
                     setshowLoading(false)
-                })
+                });
                 
             }} title="Name" show={showDisplayName} placeholder="Enter Display Name" style={{backgroundColor: 'white'}} inputStyle={{borderTopWidth: 0, borderBottomWidth: 0}}/>
      </View>
