@@ -48,7 +48,7 @@ export default function Index({navigation, route}) {
     firebase.firestore().collection('Users').onSnapshot(snapshot=>{
       var r = snapshot.docs.map(doc =>{
         // check if data is thesame as uid
-        if(my_data.uid != doc.id){
+        if(context[0].uid != doc.id){
           return {
             id: doc.id,
             data: (doc.data())
@@ -95,7 +95,7 @@ export default function Index({navigation, route}) {
       <ScrollView>
         {
           user.map((item, index)=>{
-            if(item == undefined){
+            if(item == undefined || item == null){
               return (<></>)
             }
             return (

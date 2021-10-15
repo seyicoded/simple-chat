@@ -57,10 +57,10 @@ export default function Chat({navigation, route}) {
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
         <ScrollView style={{flex: 1}}>
             {
-                chat_record.map(item=>{
+                chat_record.map((item, index)=>{
                     // console.log(item.data)
                     return (
-                        <View style={[styles.chat_container, {justifyContent: (item.data.from == my_data.uid) ? 'flex-end':'flex-start'}]}>
+                        <View key={index} style={[styles.chat_container, {justifyContent: (item.data.from == my_data.uid) ? 'flex-end':'flex-start'}]}>
                             <View style={styles.chat_inner_container}>
                                 <Text style={styles.chat_txt}>{item.data.message}</Text>
                                 <Text style={styles.date}>{new Date(item.data.timeStamp).toLocaleString()}</Text>
